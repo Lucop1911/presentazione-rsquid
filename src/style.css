@@ -414,6 +414,7 @@ h2 {
 @media (max-width: 768px) {
   .slide { padding: 1.5rem 1rem; }
   .nav-dots { display: none; }
+  .nav-hint { display: none; }
 }
 
 @media (max-width: 640px) {
