@@ -10,6 +10,7 @@ import SlideCredits from './components/SlideCredits.vue'
 const slides = [SlideHero, SlideTech, SlideArch, SlideConnections, SlideQuery, SlideCredits]
 const activeIndex = ref(0)
 const totalSlides = slides.length
+const lightboxSrc = ref(null)
 
 function goTo(i) {
   const idx = Math.max(0, Math.min(i, totalSlides - 1))
@@ -19,6 +20,16 @@ function goTo(i) {
 function onKeydown(e) {
   if (e.key === 'ArrowDown') goTo(activeIndex.value + 1)
   if (e.key === 'ArrowUp') goTo(activeIndex.value - 1)
+  if (e.key === 'Escape') lightboxSrc.value = null
+}
+
+function openLightbox(src) {
+  lightboxSrc.value = src
+}
+
+function onDocClick(e) {
+  const img = e.target.closest('.img-wrap img')
+  if (img) openLightbox(img.src)
 }
 
 let observer
@@ -38,11 +49,13 @@ onMounted(() => {
     observer.observe(el)
   })
   window.addEventListener('keydown', onKeydown)
+  document.addEventListener('click', onDocClick)
 })
 
 onUnmounted(() => {
   observer?.disconnect()
   window.removeEventListener('keydown', onKeydown)
+  document.removeEventListener('click', onDocClick)
 })
 </script>
 
@@ -59,7 +72,13 @@ onUnmounted(() => {
       />
     </nav>
 
-    <div class="nav-hint">&uarr;&darr;  usa i puntini a destra</div>
+    <div class="nav-hint">&uarr;&darr;  navigazione con frecce</div>
+
+    <Teleport to="body">
+      <div v-if="lightboxSrc" class="lightbox" @click="lightboxSrc = null">
+        <img :src="lightboxSrc" alt="Ingrandimento">
+      </div>
+    </Teleport>
 
     <SlideHero />
     <SlideTech />
